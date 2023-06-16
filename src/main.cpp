@@ -4,17 +4,18 @@
 int main(int argc, char **argv)
 {
     if (argc != 3)
-	{
-		std::cout << "Error, Usage:" << argv[0] << "Operation(FM or Astar)" << "filename\n";
-		return -1;
-	}
+    {
+        std::cout << "Error, Usage:" << argv[0] << "Operation(FM or Astar)"
+                  << "filename\n";
+        return -1;
+    }
     // 创建解析器对象
-    parser p(argv[1],argv[2]);
+    parser p(argv[1], argv[2]);
     if (p.parse() != 0)
-	{																  // 执行解析，为0时解析成功
-		std::cout << "parsing error, "<< p.returninfo() <<"\n"; // 输出解析错误信息
-		return -1;													  // 返回错误状态码
-	}
+    {                                                             // 执行解析，为0时解析成功
+        std::cout << "parsing error, " << p.returninfo() << "\n"; // 输出解析错误信息
+        return -1;                                                // 返回错误状态码
+    }
     // 创建一个Routing and Placement的对象
     Routing RP(p);
     // 选择操作
@@ -23,7 +24,7 @@ int main(int argc, char **argv)
     case FM:
         RP.performFM();
         break;
-    
+
     case Astar:
         RP.performAstar();
         break;

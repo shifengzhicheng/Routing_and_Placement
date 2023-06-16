@@ -2,13 +2,14 @@
 #include <vector>
 enum Operation
 {
-	FM,
-	Astar
+    FM,
+    Astar
 };
-class parser{
+class parser
+{
 public:
     std::vector<std::vector> &getMaze();
     std::vector<std::vector> &getModules();
-private:
 
+private:
 };
