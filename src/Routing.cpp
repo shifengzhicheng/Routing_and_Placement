@@ -2,6 +2,7 @@
 
 Routing::Routing(parser& p)
 {
+
 }
 
 void Routing::performFM()
@@ -10,8 +11,11 @@ void Routing::performFM()
 
 void Routing::performAstar()
 {
+
 }
 
-void Routing::ouputfile()
+void Routing::outputfile()
 {
+
 }
+

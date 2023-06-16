@@ -1,169 +1,97 @@
-#include "Astar.h"
-#include "Point.h"
-
-Astar::Astar(std::vector<std::vector<int>> &_maze)
-{
-    this->maze = _maze;
-}
-
-// 计算路径返回指针列表
-std::list<std::shared_ptr<Point>> Astar::GetPath(Point startPoint, Point endPoint)
-{
-
-    std::shared_ptr<Point> result = findPath(startPoint, endPoint);
-    std::list<std::shared_ptr<Point>> path;
-    // 返回路径，如果没找到路径则返回空链表
-    while (result)
-    {
-        path.push_front(result);
-        result = result->parent;
+#include"Astar.h"
+#include <queue>
+void AStarGraph::addEdge(int s, int e, double w) {
+    if (s < v_count_ && e < v_count_) {
+        adj_[s].emplace_back(s, e, w);
     }
-
-    return path;
 }
 
-// A*算法
-std::shared_ptr<Point> Astar::findPath(Point startPoint, Point endPoint)
-{
-    // 先清空openlist和closelist
-    openList.clear();
-    closeList.clear();
+void AStarGraph::addVertex(int id, int x, int y) {
+    if (id < v_count_) {
+        vertexes[id] = Vertex(id, x, y);
+    }
+}
 
-    std::shared_ptr<Point> newEndPoint(new Point(endPoint.x, endPoint.y));
-    openList.push_back(std::shared_ptr<Point>(new Point(startPoint.x, startPoint.y)));
+std::vector<int> AStarGraph::AStar(int s, int e) {
+    // 与 Dijkstra 的区别主要在以下几点:
+    // 1、优先队列的构建方式不同，A* 算法是使用代码中public int f;这个值来构建的，而 Dijkstra 算法是用 dist 值构建的
+    // 2、A* 算法除了需要更新 dist 值，还需要更新 f 值。
+    // 3、A* 算法循环结束的条件是只要遍历到终点即退出循环，因此 A* 算法最终并不一定能得到最短路径。
+    std::vector<int> parent(v_count_); // 用于还原最短路径, 当前点最短路径的父节点
+    struct cmp {
+        bool operator() (const Vertex& v1, const Vertex& v2) { return v1.f_ > v2.f_; }
+    };
+    // 最小堆
+    std::priority_queue<Vertex, std::vector<Vertex>, cmp> queue;
+    // 标记是否已找到最短距离
+    std::vector<bool> shortest(v_count_, false);
 
-    while (!openList.empty())
-    {
-        auto curPoint = getLeastGpoint();
-        openList.remove(curPoint);
-        closeList.push_back(curPoint);
-        // 1，找到当前周围的四个格子中可以通过的格子
-        auto surroundPoints = getSurroundPoints(curPoint);
-        for (auto &target : surroundPoints)
-        {
-            // 2，对于某个格子如果不在列表中就加入到开启列表，设置当前格子为其父节点，计算G
-            if (!isInList(openList, target))
-            {
-                target->parent = curPoint;
-                target->G = calcG(curPoint, target);
-                openList.push_back(target);
+    // 起始节点初始化
+    vertexes[s].dist_ = 0;
+    vertexes[s].f_ = 0;
+    queue.push(vertexes[s]);
+    while (!queue.empty()) {
+        Vertex minVertex = queue.top();
+        queue.pop();
+        if (minVertex.id_ == e) { break; }
+        if (shortest[minVertex.id_]) { continue; } // 之前更新过，是冗余备份
+        shortest[minVertex.id_] = true;
+        for (int i = 0; i < adj_[minVertex.id_].size(); ++i) {
+            Edge cur_edge = adj_[minVertex.id_].at(i); // 取出当前连通的边
+            int next_vid = cur_edge.eid_;
+            if (minVertex.dist_ + cur_edge.w_ < vertexes[next_vid].dist_) {
+                vertexes[next_vid].dist_ = minVertex.dist_ + cur_edge.w_;
+                vertexes[next_vid].f_ = vertexes[next_vid].dist_ +
+                    hManhattan(vertexes[next_vid].x_, vertexes[next_vid].y_,
+                        vertexes[e].x_, vertexes[e].y_);
+                parent[next_vid] = minVertex.id_;
+                queue.push(vertexes[next_vid]);
             }
-            // 对于某个格子，它在开启列表中就计算G值，比原来的大就什么都不做，否则设置它的父节点为当前节点并更新GF
-            else
-            {
-                int tempG = calcG(curPoint, target);
-                if (tempG < target->G)
-                {
-                    target->parent = curPoint;
+        }
+    }
+    return parent;
+}
 
-                    target->G = tempG;
+void AStarGraph::Initial()
+{
+    for (auto Ver:vertexes) {
+        Ver.dist_ = std::numeric_limits<double>::max();
+        Ver.f_ = std::numeric_limits<double>::max();
+    }
+}
+
+void AStarGraph::CreateGraph(std::vector<std::vector<int>>& _Maze)
+{
+    int ysize = _Maze.size();
+    int xsize = _Maze[0].size();
+    v_count_ = xsize * ysize;
+    adj_ = std::vector<std::vector<Edge>>(v_count_, std::vector<Edge>{});
+    vertexes = std::vector<Vertex>(v_count_);
+    int CurNode = 0;
+    std::vector<int> addx({ 1,0,-1,0 });
+    std::vector<int> addy({ 0,1,0,-1 });
+    for (int y = 0; y < _Maze.size(); y++) {
+        for (int x = 0; x < _Maze[0].size(); x++) {
+            addVertex(CurNode, x, y);
+            if (_Maze[y].at(x) == 2) {
+                ConnectionPoint.push_back(CurNode);
+            }
+            for (int i = 0; i < addx.size(); i++) {
+                int Nextx = x + addx[i];
+                int Nexty = y + addy[i];
+                if (
+                    Nextx >= xsize ||
+                    Nexty >= ysize ||
+                    Nextx < 0 ||
+                    Nexty < 0 ||
+                    _Maze[Nexty].at(Nextx) == 1
+                    ) {
+                    continue;
                 }
+                int NextNode = Nextx + Nexty * xsize;
+                addEdge(CurNode,NextNode,1);
             }
-            // 如果找到了目标节点就直接返回
-            std::shared_ptr<Point> resPoint = isInList(openList, newEndPoint);
-            if (resPoint)
-                // 返回指针节点
-                return resPoint;
+            CurNode++;
         }
     }
-    // 失败返回NULL
-    return NULL;
-}
-
-std::list<std::shared_ptr<Point>> Astar::getSearchPath()
-{
-    return closeList;
-}
-
-/*  找到G值最小的下一个节点 */
-std::shared_ptr<Point> Astar::getLeastGpoint()
-{
-    if (!openList.empty())
-    {
-        auto resPoint = openList.front();
-        for (auto &point : openList)
-        {
-            if (point->G < resPoint->G)
-            {
-                resPoint = point;
-            }
-        }
-        return resPoint;
-    }
-    return NULL;
-}
-
-std::vector<std::shared_ptr<Point>> Astar::getSurroundPoints(std::shared_ptr<Point> point) const
-{
-    std::vector<std::shared_ptr<Point>> surroundPoints;
-    std::vector<std::pair<int, int>> coordinates = {
-        {point->x - 1, point->y},
-        {point->x, point->y - 1},
-        {point->x + 1, point->y},
-        {point->x, point->y + 1}};
-
-    for (const auto &coord : coordinates)
-    {
-        std::shared_ptr<Point> newPoint = std::make_shared<Point>(coord.first, coord.second);
-        if (isCanReach(point, newPoint))
-            surroundPoints.push_back(newPoint);
-    }
-
-    return surroundPoints;
-}
-
-// 判断是否可以通过
-bool Astar::isCanReach(std::shared_ptr<Point> point, std::shared_ptr<Point> target) const
-{
-    // 如果点与当前节点重合、超出地图、是障碍物、或者在关闭列表中，返回false
-    if (
-        (target->x < 0 || target->x >= maze[0].size()) ||
-        (target->y < 0 || target->y >= maze.size()) ||
-        (maze[target->y][target->x] == 1) ||
-        (isInList(closeList, target)))
-    {
-        return false;
-    }
-    else
-    {
-        return true;
-    }
-}
-
-std::shared_ptr<Point> Astar::isInList(std::list<std::shared_ptr<Point>> list, std::shared_ptr<Point> point) const
-{
-    // 判断某个节点是否在列表中，这里不能比较指针，因为每次加入列表是新开辟的节点，只能比较坐标
-    for (auto p : list)
-        if (p->x == point->x && p->y == point->y)
-            return p;
-    return NULL;
-}
-
-/* 曼哈顿距离计算G */
-int Astar::calcG(std::shared_ptr<Point> temp_point, std::shared_ptr<Point> point)
-{
-    int extraG = abs(point->x - temp_point->x) + abs(point->y - temp_point->y);
-    int parentG = point->parent == NULL ? 0 : point->parent->G;
-    return extraG + parentG;
-}
-
-Point Astar::findone(std::shared_ptr<Point> point, Point end)
-{
-    openList.clear();
-    closeList.clear();
-    std::shared_ptr<Point> newend(new Point(end));
-    auto surroundingpoints = getSurroundPoints(point);
-    for (auto &target : surroundingpoints)
-    {
-        target->G = calcG(point, target);
-    }
-    Point temp;
-    for (auto &target : surroundingpoints)
-    {
-        if (target->G < temp.G)
-        {
-            temp = *target;
-        }
-    }
-    return temp;
 }
