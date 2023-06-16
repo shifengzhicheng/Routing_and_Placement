@@ -1,8 +1,7 @@
 #include "Routing.h"
 
-Routing::Routing(parser& p)
+Routing::Routing(parser &p)
 {
-
 }
 
 void Routing::performFM()
@@ -11,11 +10,8 @@ void Routing::performFM()
 
 void Routing::performAstar()
 {
-
 }
 
 void Routing::outputfile()
 {
-
 }
-

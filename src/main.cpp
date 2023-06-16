@@ -17,9 +17,9 @@ int main()
     std::string filename = "file\\prob1.txt";
     parser p(type, filename);
     if (p.parse() != 0)
-    {                                                             // 执行解析，为0时解析成功
+    {                                                           // 执行解析，为0时解析成功
         std::cout << "parsing error, " << p.returninfo << "\n"; // 输出解析错误信息
-        return -1;                                                // 返回错误状态码
+        return -1;                                              // 返回错误状态码
     }
     // 创建一个Routing and Placement的对象
     Routing RP(p);

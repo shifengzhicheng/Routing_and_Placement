@@ -140,8 +140,110 @@ FM算法以及Astar算法实现读取文件进行处理
 
 ### 项目顶层文件
 
-此部分由郑志宇同学维护，接口与功能与小组成员共同商议确定。最终实现了项目的并行推进与项目成员对函数的独立维护。
+此部分由郑志宇同学搭建，接口与功能与小组成员共同商议确定。最终实现了项目的并行推进与项目成员对函数的独立维护。方便项目更容易进行其他功能的扩展。
 
-### Part 1FM算法实现模块的划分
+│   ├── `main.cpp`
 
-### Part 2Astar算法实现模块的连线
+│   ├── `routing.cpp`
+
+│   ├── `routing.h`
+
+#### 顶层的流程
+
+- `parser`类读取文件并解析，得到对应的对象
+- `Routing`类根据解析文件的结果实现不同的功能
+  - `Astar`连线
+  - `FM`划分
+- `Routing`类输出一个文件到目标文件夹`file`
+
+### Part 1`FM`算法实现模块的划分
+
+
+
+### Part 2`Astar`算法实现模块的连线
+
+这部分由郑志宇同学与周翔同学共同完成。
+
+#### 点到点的`A*`算法
+
+│   ├── `Astar.h`
+
+│   ├── `Astar.cpp`
+
+#### `A*`算法图的定义
+
+##### 边和节点定义
+
+```c++
+struct Edge
+{              // 表示边
+    int sid_;  // 边的起始节点
+    int eid_;  // 边的结束节点
+    double w_; // 边的权重
+    Edge() = default;
+    Edge(int s, int e, double w)
+        : sid_(s), eid_(e), w_(w) {}
+};
+struct Vertex
+{
+    int id_;
+    double dist_; // 算法实现中，记录第一个节点到这个节点的距离
+    double f_;    // f(i)=g(i)+h(i)
+    int x_, y_;   // 顶点在地图中的坐标（x, y）
+    Vertex() = default;
+    Vertex(int id, int x, int y)
+        : id_(id), x_(x), y_(y), dist_(std::numeric_limits<double>::max()), f_(std::numeric_limits<double>::max()) {}
+};
+```
+
+##### `AstarGraph`类
+
+```c++
+class AStarGraph
+{
+public:
+    AStarGraph(){};
+    void CreateGraph(std::vector<std::vector<int>> &_Maze); // 创建图
+    void addEdge(int s, int e, double w);                   // 添加边
+    void addVertex(int id, int x, int y);                   // 添加节点
+    std::vector<int> AStar(int s, int e);                   // 寻路
+    void Initial();                                         // 初始化
+    std::vector<int> &getConnectionPoint()                  // 返回需要连接的点的关系
+    {
+        return ConnectionPoint;
+    };
+private:
+    std::vector<std::vector<Edge>> adj_; // 邻接表
+    int v_count_;                        // 顶点数
+    std::vector<Vertex> vertexes;        // 记录所有顶点，主要记录坐标
+    double hManhattan(int x1, int y1, int x2, int y2)
+    {
+        return std::abs(x1 - x2) + std::abs(y1 - y2);
+    }
+    std::vector<int> ConnectionPoint;
+};
+```
+
+##### `A*`算法是对`Dijkstra`算法的优化
+
+在`Dijkstra`算法中，需要创建了优先队列，从优先队列中取出节点，再从这个节点扩散到其他节点（类似广度优先搜索），优先队列的优先依据是根据起始点到队列中节点最近的一个。即队列中的节点总是离起始点最近的先出队，这样很容易在一开始就跑偏。
+
+当走到某个节点时，已知的是起始点到该节点的距离$g(i)$，`Dijkstra`算法判断依据就只有这一个，那么再增加一个当前节点到终点的距离，结合$g(i)$可以实现防止过度跑偏。
+
+在电路图中，虽然不知道中间某个点距离终点的最短路，但是我们可以将地图置于坐标轴中，通过计算节点之间的曼哈顿距离来代替欧几里得距离，曼哈顿距离就是计算两点之间横纵坐标的距离之和，只涉及到加减法和符号转换。这里得到的距离记为$h(i)$，为启发函数。
+
+而$g(i) + h(i)$就可以当做最终的估价函数，优先队列中，估价函数值最低的优先出列。
+$$
+f(i) = g(i) + h(i)
+$$
+
+#### 连接多个点的策略
+
+│   ├── `routing.h`
+
+```C++
+
+```
+
+
+

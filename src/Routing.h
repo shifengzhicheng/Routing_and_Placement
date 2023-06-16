@@ -9,7 +9,8 @@ public:
     int type;
     std::string filename;
     // 构造Routing类
-    Routing(parser& p) {
+    Routing(parser &p)
+    {
         Maze = p.getMaze();
         modules = p.getModules();
         type = p.type;

@@ -1,5 +1,6 @@
 #pragma once
-class FM {
+class FM
+{
 public:
 private:
 };

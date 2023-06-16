@@ -7,14 +7,15 @@ struct Point
     int G;
     std::shared_ptr<Point> parent;
     std::shared_ptr<Point> next;
-    Point(int _x, int _y) {
+    Point(int _x, int _y)
+    {
         x = _x;
         y = _y;
         G = 0;
         parent = NULL;
         next = NULL;
     }
-    Point() 
+    Point()
     {
         x = y = G = 0;
         parent = next = NULL;
