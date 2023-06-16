@@ -10,8 +10,10 @@ enum Operation
 class parser
 {
 public:
-    std::vector<std::vector> &getMaze();
-    std::vector<std::vector> &getModules();
-
+    int type;
+    parser(std::string,std::string);
+    std::vector<std::vector<int>> &getMaze();
+    std::vector<std::vector<int>> &getModules();
+    
 private:
 };

@@ -13,9 +13,9 @@ int main()
     // }
     // 创建解析器对象
     // parser p(argv[1], argv[2]);
-    std::string type = "Astar";
+    std::string type = "FM";
     std::string filename = "file\\prob1.txt";
-    parser p(type,filename)
+    parser p(type, filename);
     if (p.parse() != 0)
     {                                                             // 执行解析，为0时解析成功
         std::cout << "parsing error, " << p.returninfo() << "\n"; // 输出解析错误信息

@@ -1,3 +1,4 @@
+#pragma once
 #include "parser.h"
 #include "FM.h"
 #include "Astar.h;
