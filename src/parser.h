@@ -4,16 +4,18 @@
 #include <string>  // 包含字符串头文件
 enum Operation
 {
-    FM,
-    Astar
+    OPFM,
+    OPAstar
 };
 class parser
 {
 public:
     int type;
     parser(std::string,std::string);
+    int parse();
     std::vector<std::vector<int>> &getMaze();
     std::vector<std::vector<int>> &getModules();
-    
+    std::string returninfo;
 private:
+    std::string filename;
 };

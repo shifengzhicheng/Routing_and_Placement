@@ -18,7 +18,7 @@ int main()
     parser p(type, filename);
     if (p.parse() != 0)
     {                                                             // 执行解析，为0时解析成功
-        std::cout << "parsing error, " << p.returninfo() << "\n"; // 输出解析错误信息
+        std::cout << "parsing error, " << p.returninfo << "\n"; // 输出解析错误信息
         return -1;                                                // 返回错误状态码
     }
     // 创建一个Routing and Placement的对象
@@ -26,11 +26,11 @@ int main()
     // 选择操作
     switch (RP.type)
     {
-    case FM:
+    case OPFM:
         RP.performFM();
         break;
 
-    case Astar:
+    case OPAstar:
         RP.performAstar();
         break;
     }

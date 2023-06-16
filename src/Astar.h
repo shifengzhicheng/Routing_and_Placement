@@ -17,7 +17,6 @@ private:
 public:
     Astar(){};
     Astar(std::vector<std::vector<int>> &_maze);
-    void setMaze(std::vector<std::vector<int>> &_maze);
     std::list<std::shared_ptr<Point>> GetPath(Point startPoint, Point endPoint);
     std::list<std::shared_ptr<Point>> getSearchPath();
     std::vector<std::shared_ptr<Point>> getSurroundPoints(std::shared_ptr<Point> point) const;
