@@ -13,6 +13,7 @@ public:
     {
         Maze = p.getMaze();
         modules = p.getModules();
+        filename = p.getFileName();
         type = p.type;
     };
     // FM算法
@@ -23,6 +24,7 @@ public:
     void outputfile();
 
 private:
+    void Routing::connect(std::vector<std::vector<int>>& Maze, int source, int target, std::vector<int> parent);
     // 矩阵
     std::vector<std::vector<int>> Maze;
     // 模块连接关系

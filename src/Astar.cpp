@@ -1,5 +1,6 @@
 #include "Astar.h"
 #include <queue>
+#include <iostream>
 void AStarGraph::addEdge(int s, int e, double w)
 {
     if (s < v_count_ && e < v_count_)
@@ -73,6 +74,15 @@ void AStarGraph::Initial()
     {
         vertexes[i].dist_ = std::numeric_limits<double>::max();
         vertexes[i].f_ = std::numeric_limits<double>::max();
+    }
+}
+
+void AStarGraph::drawGrid(const std::vector<std::vector<int>>& maze)
+{
+    for (int i = 0; i < maze.size(); i++) {
+        for (int j = 0; j < maze[0].size(); j++)
+            std::cout << maze[i][j] << "  ";
+        std::cout << "\n";
     }
 }
 

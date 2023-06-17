@@ -15,6 +15,7 @@ public:
     parser(std::string, std::string);
     int parse();
     std::string returninfo();
+    std::string getFileName();
     std::vector<std::vector<int>>& getMaze();
     std::vector<std::vector<int>>& getModules();
 private:

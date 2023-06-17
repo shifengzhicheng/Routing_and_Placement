@@ -27,6 +27,11 @@ std::string parser::returninfo()
 	return erroinfo;
 }
 
+std::string parser::getFileName()
+{
+	return filename;
+}
+
 int parser::parse()
 {
 	if (type == OPFM)

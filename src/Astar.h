@@ -35,8 +35,9 @@ public:
     {
         return ConnectionPoint;
     };
-
+    void drawGrid(const std::vector<std::vector<int>>& maze);
 private:
+    const int TILE_SIZE = 20;  // 方格的大小
     std::vector<std::vector<Edge>> adj_; // 邻接表
     int v_count_;                        // 顶点数
     std::vector<Vertex> vertexes;        // 记录所有顶点，主要记录坐标
