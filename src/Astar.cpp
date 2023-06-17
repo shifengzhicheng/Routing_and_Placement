@@ -77,6 +77,20 @@ void AStarGraph::Initial()
     }
 }
 
+void AStarGraph::modifyWeight(int s, int t, double w)
+{
+    for (int i = 0; i < adj_[s].size(); i++) {
+        if (adj_[s].at(i).eid_ == t) {
+            adj_[s].at(i).w_ = w;
+        }
+    }
+    for (int i = 0; i < adj_[t].size(); i++) {
+        if (adj_[t].at(i).eid_ == s) {
+            adj_[t].at(i).w_ = w;
+        }
+    }
+}
+
 void AStarGraph::drawGrid(const std::vector<std::vector<int>>& maze)
 {
     for (int i = 0; i < maze.size(); i++) {
@@ -119,7 +133,7 @@ void AStarGraph::CreateGraph(std::vector<std::vector<int>> &_Maze)
                     continue;
                 }
                 int NextNode = Nextx + Nexty * xsize;
-                addEdge(CurNode, NextNode, 1);
+                addEdge(CurNode, NextNode, 1.1);
             }
             CurNode++;
         }

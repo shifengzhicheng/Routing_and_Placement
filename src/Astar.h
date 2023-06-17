@@ -35,6 +35,7 @@ public:
     {
         return ConnectionPoint;
     };
+    void modifyWeight(int s,int t,double w);// 改变边的权重
     void drawGrid(const std::vector<std::vector<int>>& maze);
 private:
     const int TILE_SIZE = 20;  // 方格的大小

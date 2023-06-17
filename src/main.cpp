@@ -32,6 +32,7 @@ int main()
 
     case OPAstar:
         RP.performAstar();
+        RP.filename = filename;
         break;
     }
     // 输出文件

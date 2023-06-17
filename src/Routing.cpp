@@ -13,6 +13,7 @@ void Routing::connect(std::vector<std::vector<int>>& Maze, int source, int targe
 	if (Maze[y].at(x) != 2) {
 		Maze[y].at(x) = 3;
 	}
+	Astar.modifyWeight(target, parent[target], 0);
 	connect(Maze, source, parent[target], parent);
 }
 
@@ -32,7 +33,7 @@ void Routing::performAstar()
 
 void Routing::outputfile()
 {
-	std::string filepath("file\\"+filename + "out.txt");
+	std::string filepath(filename + "out.txt");
 	std::ofstream output_file(filepath);
 	if (!output_file.is_open()) {
 		std::cout<<"Failed to open output file!" << std::endl;
