@@ -279,6 +279,62 @@ void Routing::performAstar()
 ```
 由于每次利用`Astar`算法对两个引脚进行连线后，都会改变图`Maze`上节点的参数，因此在进行下一次布线之前，首先需要使用`Astar.Initial()`函数进行初始化，将节点的`dist_`与`f_`恢复到最大值，之后再进行后续节点的`connect`操作。
 
+### Part 3 `FM`算法和`Astar`算法实现结果的显示
+该部分由沈笑涵同学完成。
+该部分实现了将前两部分`FM`和`Astar`算法的结果汇总，并完成相关布线代价的计算，并将最终布线结果输出到txt文件中。其部分详见以下文件：
+
+│   ├── `routing.cpp`
+
+│   ├── `routing.h`
+
+其中，`routing.h`中构造了一个`Routing`的class，基本结构如下：
+```C++
+class Routing
+{
+public:
+    // 完成解析输出的类型
+    int type;
+    std::string filename;
+    // 构造Routing类
+    Routing(parser& p)
+    {
+        Maze = p.getMaze();
+        modules = p.getModules();
+        filename = p.getFileName();
+        type = p.type;
+    };
+    // FM算法
+    void performFM();
+    // Astar算法
+    void performAstar();
+    // 输出文件
+    void outputfile();
+    //计算代价
+    int cost_of_routing_Astar();//Astar
+    int cost_of_FM();           //FM
+private:
+    void connect(std::vector<std::vector<int>>& Maze, 
+    int source, int target, std::vector<int> parent);
+    // 矩阵
+    std::vector<std::vector<int>> Maze;
+    // 模块连接关系
+    std::vector<std::vector<int>> modules;
+    // Astar代理
+    AStarGraph Astar;
+    // FM代理
+    FM fm;
+};
+```
+其中，`Maze`和`fm`分别存储`Astar`和`FM`算法得到的结果，两算法代价计算函数分别为
+```C++
+    //计算代价
+    int cost_of_routing_Astar();//Astar
+    int cost_of_FM();           //FM
+```
+其中，`Astar`算法的代价为布线线长，`FM`算法的代价为最小比例切割边的值。
+最后，通过`outputfile()`函数将结果写入到txt文件中。
+
+
 ## 项目测试
 
 ### 测试文件1 `prob1.txt`
@@ -337,6 +393,8 @@ void Routing::performAstar()
 
 
 ```
+`Astar`代价如下：
+<img src="Astar_out.png" alt="Astar_out.png" width="600px;" />
 
 ## 项目总结
 
