@@ -1,5 +1,4 @@
 #include "parser.h"
-#include "Point.h"
 #include <fstream>
 #include <iostream>
 

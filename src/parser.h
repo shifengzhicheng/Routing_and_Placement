@@ -3,8 +3,6 @@
 #include <fstream> // 包含文件流头文件
 #include <string>  // 包含字符串头文件
 
-struct Point;
-
 enum Operation
 {
     OPFM,
