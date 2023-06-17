@@ -81,6 +81,7 @@ int parser::parse()
 				if (index >= 0)
 					Modules[index].push_back(std::stoi(tmp));
 			}
+			return 0;
 		}
 	}
 	else
@@ -109,6 +110,7 @@ int parser::parse()
 					}
 				}
 			}
+			return 0;
 		}
 	}
 }
