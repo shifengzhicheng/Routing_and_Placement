@@ -13,8 +13,8 @@ int main()
     // }
     // 创建解析器对象
     // parser p(argv[1], argv[2]);
-    std::string type = "FM";
-    std::string filename = "file\\prob1.txt";
+    std::string type = "Astar";
+    std::string filename = "file\\prob4.txt";
     parser p(type, filename);
     if (p.parse() != 0)
     {                                                           // 执行解析，为0时解析成功
@@ -32,6 +32,7 @@ int main()
 
     case OPAstar:
         RP.performAstar();
+        RP.filename = "Astar";
         break;
     }
     // 输出文件
