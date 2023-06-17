@@ -69,10 +69,10 @@ std::vector<int> AStarGraph::AStar(int s, int e)
 
 void AStarGraph::Initial()
 {
-    for (auto Ver : vertexes)
+    for (int i = 0; i < vertexes.size(); i++)
     {
-        Ver.dist_ = std::numeric_limits<double>::max();
-        Ver.f_ = std::numeric_limits<double>::max();
+        vertexes[i].dist_ = std::numeric_limits<double>::max();
+        vertexes[i].f_ = std::numeric_limits<double>::max();
     }
 }
 
