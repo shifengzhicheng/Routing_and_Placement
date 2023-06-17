@@ -9,7 +9,7 @@ public:
     int type;
     std::string filename;
     // 构造Routing类
-    Routing(parser &p)
+    Routing(parser& p)
     {
         Maze = p.getMaze();
         modules = p.getModules();
@@ -22,9 +22,11 @@ public:
     void performAstar();
     // 输出文件
     void outputfile();
-
+    //计算布线代价
+    int cost_of_routing_Astar();//Astar
+    int cost_of_FM();           //FM
 private:
-    void Routing::connect(std::vector<std::vector<int>>& Maze, int source, int target, std::vector<int> parent);
+    void connect(std::vector<std::vector<int>>& Maze, int source, int target, std::vector<int> parent);
     // 矩阵
     std::vector<std::vector<int>> Maze;
     // 模块连接关系
