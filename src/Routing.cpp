@@ -1,6 +1,6 @@
 #include "Routing.h"
 #include <fstream>
-
+#include <iostream>
 void Routing::performFM()
 {
 }
@@ -30,15 +30,12 @@ void Routing::performAstar()
 	Astar.drawGrid(Maze);
 }
 
-
-
-
 void Routing::outputfile()
 {
 	std::string filepath("file\\"+filename + "out.txt");
 	std::ofstream output_file(filepath);
 	if (!output_file.is_open()) {
-		std::cerr << "Failed to open output file!" << std::endl;
+		std::cout<<"Failed to open output file!" << std::endl;
 		return;
 	}
 	for (auto i : Maze) {
