@@ -6,7 +6,7 @@ void Routing::performFM()
 	// partition = FM_Algorithm(modules);
 	partition = fm.FM_Algorithm_Pertubation(modules);
 }
-void Routing::connect(std::vector<std::vector<int>> &Maze, int source, int target, std::vector<int> parent)
+void Routing::connect(std::vector<std::vector<int>> &Maze, int source, int target, std::vector<int> &parent)
 {
 	if (source == target)
 		return;

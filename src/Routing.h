@@ -26,7 +26,7 @@ public:
     int cost_of_routing_Astar();//Astar
     int cost_of_FM();           //FM
 private:
-    void connect(std::vector<std::vector<int>>& Maze, int source, int target, std::vector<int> parent);
+    void connect(std::vector<std::vector<int>>& Maze, int source, int target, std::vector<int> &parent);
     // 矩阵
     std::vector<std::vector<int>> Maze;
     // 模块连接关系

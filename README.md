@@ -65,6 +65,7 @@ FM算法以及Astar算法实现读取文件进行处理
 
 1. 使用工厂模式实现主要的功能，各部分抽象程度高，且可扩展性很强
 2. `Astar`算法使用了优先队列实现，使用简单的连线策略实现了多数情况下相对优的连线结果。
+2. 
 
 ### 项目使用方法
 
@@ -78,18 +79,30 @@ FM算法以及Astar算法实现读取文件进行处理
 
 根据自己的环境编写替换`Makefile`，目前项目中的`Makefile`仅仅适用于`window`。
 
-`Windows`：在`testfile` 文件夹中写好测试文件`file.ll` 后，在项目文件夹下运行以下命令：
+`Windows`：在`file` 文件夹中写好测试文件`file.txt` 后，在项目文件夹下运行以下命令：
 
-```
-.\Routing.exe FM testfile\prob1.txt
-.\Routing.exe Astar testfile\prob4.txt
+```bash
+.\Routing.exe FM file\file.txt
+.\Routing.exe Astar file\file.txt
 ```
 
 #### cmd中运行结果示意：
 
 ```bash
-
-
+# partition迭代次数
+FM ..
+iteration 0: Cut Size = ...
+iteration 1: Cut Size = ...
+iteration 2: Cut Size = ...
+FM algorithm .. done. Cut Size = ...
+Partition Result:
+# Astar输出一个连好线的图
+0 0 0 0 0 0 0 0 0 0 
+1 0 0 1 0 0 0 0 1 0 
+0 0 2 3 0 0 0 0 0 1 
+0 0 0 2 3 2 0 0 0 1 
+0 0 0 2 3 3 0 0 0 0 
+0 0 2 3 3 2 3 3 2 0 
 ```
 
 ### 文件格式声明
@@ -248,7 +261,7 @@ $$
 ###### `connect`函数
 
 ```C++
-void connect(std::vector<std::vector<int>>& Maze, int source, int target, std::vector<int> parent)
+void connect(std::vector<std::vector<int>>& Maze, int source, int target, std::vector<int> &parent)
 {
 	if (source == target) return;
 	int x = target % Maze[0].size();
@@ -256,7 +269,7 @@ void connect(std::vector<std::vector<int>>& Maze, int source, int target, std::v
 	if (Maze[y].at(x) != 2) {
 		Maze[y].at(x) = 3;
 	}
-	connect(Maze, source, parent[target], parent);
+	connect(Maze, source, parent[target], &parent);
 }
 ```
 `AStarGraph.AStar(int s, int e)`会传出全部的搜索结果`parent`，是一个大小为`n*n`的向量。如果直接通过`for`循环更改`Maze`的所有的参数，可能会出现两个引脚之间存在多条连线的情况。这里使用递归，由目标节点向前推进，直到回到开始节点为止。期间可能会经过其他引脚，此时不改变`Maze`中该引脚位置的参数。否则将`Maze`上的参数改为`3`，表示连线经过该点。
@@ -271,9 +284,9 @@ void Routing::performAstar()
 
 	for (int i = 0; i < ConnectionPoint.size() - 1; i++)
 	{
+        Astar.Initial();
 		std::vector<int> parent = Astar.AStar(ConnectionPoint[i], ConnectionPoint[i + 1]);
 		connect(Maze, ConnectionPoint[i], ConnectionPoint[i + 1], parent);
-		Astar.Initial();
 	}
 }
 ```
