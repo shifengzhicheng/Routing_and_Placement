@@ -59,7 +59,7 @@ FM算法以及Astar算法实现读取文件进行处理
 
 1. 使用工厂模式实现主要的功能，各部分抽象程度高，且可扩展性很强
 2. `Astar`算法使用了优先队列实现，使用简单的连线策略实现了多数情况下相对优的连线结果。
-2. 
+3. `FM`算法实现了通过桶型数据结构查找最大增益和相应的更新，在大数据量的背景下对于算法时间复杂度的优化显得极为必要，同时使用多起始点方法改进`FM`算法。 
 
 ### 项目使用方法
 
@@ -235,7 +235,92 @@ while (G_m > 0) {
     }
 }
 ```
+#### 算法具体实现
+│   ├── `data_structure.h`
 
+│   ├── `FM_algorithm.h`
+
+│   ├── `FM_algorithm.cpp`
+
+##### 节点类的定义
+
+```c++
+class NODE {
+public:
+	int nodeIndex;                           //节点索引
+	NODE_PART Node_Partition;                //节点划分归属
+	LOCK_STATE lockedstate;                  //节点锁定情况
+	int nodeGain;                            //节点增益
+	std::vector<int> ConnectedNode;          //节点连接的其他节点
+}
+```
+对于NODE类，重载了三个构造函数以便灵活赋值。
+
+##### 节点的指针数组类
+
+```c++
+class POINTER_ARRAY {
+public:
+	std::vector<NODE*> data_array;                                       //节点的指针数组
+
+	POINTER_ARRAY();
+	POINTER_ARRAY(std::vector<std::vector<int>>& modules);               //根据parser解析得到的modules进行指针数组的构造
+	void copy(POINTER_ARRAY pa);                                         //指针数组的复制
+	void reset(POINTER_ARRAY pa);                                        //指针数组的拷贝赋值
+	void recover();                                                      //指针数组的解锁
+	void init_half();                                                    //指针数组的二分初始化划分
+	void init_even();                                                    //指针数组的奇偶初始化划分
+	void init_rand();                                                    //指针数组的随机初始化划分
+	void updateGain();                                                   //指针数组更新增益
+	int updateGain(int i);                                               //指针数组更新指定节点增益
+	int cutSize();                                                       //指针数组按照当前划分被切割的边数
+};
+```
+
+##### 桶结构类
+
+```c++
+class BucketNode {
+public:
+	int nodeIndex;
+	BucketNode* next;
+	BucketNode* prev;
+
+	BucketNode(int i,BucketNode* n,BucketNode* p) {
+		nodeIndex = i;
+		next = n;
+		prev = p;
+	}
+};
+
+class Bucket {
+public:
+	std::map<int, BucketNode*, std::greater<int>> bucketAtoB;
+	std::map<int, BucketNode*, std::greater<int>> bucketBtoA;
+
+	Bucket()；
+	void load(POINTER_ARRAY& parr)；
+	int maxGain(NODE_PART partition,POINTER_ARRAY& parr)；
+	void updateLocal(NODE_PART partition, int i, int updateGain, int prevGain)；
+};
+```
+桶结构中为了减少数据冗余，新定义了桶节点以实现双向链表结构。采用`map`容器来构造桶形结构，使得可以通过增益值作为桶的入口来访问节点，由于`map`容器本身的自排序性，可轻松找到增益最大的入口。
+由于实现的目标是二划分，因此需要对两个方向分别维持一个桶形数据结构。
+
+##### FM类
+
+```c++
+class FM {
+public:
+        int mincutsize;                                                                                                               //FM算法执行后当前的最小切割数
+	
+	void one_swap(Bucket& bu, POINTER_ARRAY& pointer_array_local, POINTER_ARRAY& pointer_array_global, int currentBest);          //FM算法的一次迭代
+	std::vector<std::vector<int>> FM_Algorithm(std::vector<std::vector<int>> modules);                                            //FM算法
+	std::vector<std::vector<int>> FM_Algorithm_Pertubation(std::vector<std::vector<int>> modules);                                //加入初始状态微扰后改进的FM算法
+};
+```
+`one_swap`方法即通过桶形数据结构和节点指针数组执行如下过程：从`partition A`中取得最大增益且未锁定的节点移动至`partition B`中，更新`A`节点相连所有节点的增益；从`partition B`中取得最大增益且未锁定的节点移动至`partition A`中，更新`B`节点相连所有节点的增益。直到所有节点都被锁定后，完成一次迭代。
+`FM`算法中宏定义了迭代的上限``，但为了加快`FM`算法的运算过程，假设连续两次迭代都未能成功减小切割数后即结束算法。
 ### Part 2`Astar`算法实现模块的连线
 
 #### 点到点的`A*`算法
