@@ -332,7 +332,7 @@ public:
 
 因此，对于`FM`算法做出多起始点方法的改进，通过随机数产生随机初始平衡划分，多次运行寻找最优结果作为最终的划分结果。因此`FM_Algorithm_Pertubation`的执行结果具体到每一次都不尽相同，但从数学统计意义上可以给出最优结果。本实现中重复运行`5`次基础`FM`算法。一次典型的运行结果如下。
 
-<img src="picture\fm_pertubation.png" alt="fm_rand" width="600px;" />
+<img src="picture\fm_rand.png" alt="fm_rand" width="600px;" />
 
 ### Part 2`Astar`算法实现模块的连线
 
