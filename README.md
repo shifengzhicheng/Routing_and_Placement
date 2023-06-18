@@ -176,6 +176,43 @@ Partition Result:
 
 这部分由邱峻蓬同学，任钰浩同学，沈笑涵同学完成。
 
+#### 算法概述
+##### 介绍
+FM算法的移动过程和KL算法很类似。目标都是讲割代价最小化。但是FM算法要i计算每个独立节点移动的增益，而不是对交换所产生的增益。和KL算法一样，FM算法再每个轮次中选择最好的一次移动。在FM算法的每轮中，一旦一个节点被移动，在本轮中它就被锁定不能再次移动。
+##### 术语
+以下是和FM算法有关的定义。
+
+节点 $c$ 的增益 $\Delta g(c)$ 是 $c$ 移动后割集割边数量所产生的变化。增益 $\Delta g(c)$ 越高，移动节点 $c$ 到其它划分的的优先级越高。形式上，节点增益被定义为 $$\Delta g(c) = E(c) - I(c)$$ 其中 $E(c)$ 是 $c$ 与不是其所在划分的节点之间边的数量，$I(c)$ 是 $c$ 与其自身所在划分的其它节点之间边的数量。
+
+每轮中的最大增益 $G_m$ 是指 $m$ 次移动所产生的最大节点增益 $\Delta g$ 的总和所决定的。$$\Sigma_{i=1}^m \Delta g_i$$ 类似于在KL算法中，每轮中所有的移动决定了 $G_m$ 和移动顺序 $<c_1...c_m>$ 在每轮结束后，即 $G_m$ 和相应的 $m$ 次移动被决定后，再更新移动节点的位置。
+##### 流程
+> INPUT： 图 $G(V,E)$ 
+OUTPUT: 划分后的图 $G(V,E)$
+$(A, B) = PARTITION(G)$ //划分初始化
+$G_m = \infin$
+$while(G_m>0)$
+$i = 1$
+$order = \emptyset$
+$foreach(c \in V)$
+$\Delta g[i][c] = E(c) - I(c)$ //计算所有节点的初始增益
+$status[c] = FREE$ //将所有节点设为自由
+$while(!IS\_FIXED(V))$
+$cell = MAX\_GAIN(\Delta g[i])$ //找到增益最大的节点
+$ADD(order, (cell, \Delta g[i]))$ //记录节点移动序列
+$cirtical\_net = CRITICAL\_NETS(cell)$ //连接该节点的线网
+$if(cell \in A)$
+$TRY\_MOVE(cell, A, B)$
+$else$
+$TRY\_MOVE(cell, B, A)$
+$status[cell] = FIXED$
+$foreach(c \in critical\_net, c \neq cell)$
+$if(status[c] == FREE)$
+$UPDATE\_GAIN(\Delta g[i][c])$ //更新与尝试移动节点相连的所有节点的增益
+$i = i + 1$
+$(G_m, m) = BEST\_MOVES(order)$ //找到 $G_m$ 最大化时的移动序列
+$if(G_m >0)$
+$CONFIRM\_MOVES(order, m)$ //按该移动序列进行实际移动操作
+> 
 ### Part 2`Astar`算法实现模块的连线
 
 这部分由郑志宇同学与周翔同学共同完成。
@@ -329,6 +366,34 @@ Calc.exe file1 file2
 ### Part 3 文件解析以及`FM`算法和`Astar`算法实现结果的显示
 
 该部分由任钰浩和沈笑涵同学完成。
+##### 文件解析
+该部分将记录数据信息的.txt文件读入并转化为`FM`算法和`Astar`算法需要的的数据结构
+详见以下文件：
+
+│   ├── `parser.cpp`
+
+│   ├── `parser.h`
+
+其中`Maze`中存`Astar`算法所需要的数据，`Modules`中存`FM`算法所需要的数据，`erroinfo`中存读取文件时发现的文件格式错误信息，通过相应的`getMaze``getModules``returninfo`等结构访问数据与信息
+```C++
+class parser
+{
+public:
+    int type;
+    parser(std::string, std::string);
+    int parse();
+    std::string returninfo();
+    std::string getFileName();
+    std::vector<std::vector<int>>& getMaze();
+    std::vector<std::vector<int>>& getModules();
+private:
+    std::string filename;
+    std::string erroinfo;
+    std::vector<std::vector<int>> Maze;
+    std::vector<std::vector<int>> Modules;
+};
+```
+##### 结果显示
 该部分实现了将前两部分`FM`和`Astar`算法的结果汇总，并完成相关布线代价的计算，并将最终布线结果输出到txt文件中。其部分详见以下文件：
 
 │   ├── `routing.cpp`
