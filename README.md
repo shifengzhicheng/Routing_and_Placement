@@ -156,7 +156,7 @@ Partition Result:
 
 ### 项目顶层文件
 
-此部分由郑志宇同学搭建，接口与功能与小组成员共同商议确定。最终实现了项目的并行推进与项目成员对函数的独立维护。方便项目更容易进行其他功能的扩展。
+此部分由郑志宇同学搭建，接口与功能与小组成员共同商议确定。最终实现了项目的并行推进与项目成员对函数的独立维护。方便项目更容易进行其他功能的扩展。最终有郑志宇同学完成了项目的编译，输出一个`Routing.exe`文件。
 
 │   ├── `main.cpp`
 
@@ -174,7 +174,7 @@ Partition Result:
 
 ### Part 1`FM`算法实现模块的划分
 
-
+这部分由邱峻蓬同学，任钰浩同学，沈笑涵同学完成。
 
 ### Part 2`Astar`算法实现模块的连线
 
@@ -246,7 +246,7 @@ private:
 
 当走到某个节点时，已知的是起始点到该节点的距离$g(i)$，`Dijkstra`算法判断依据就只有这一个，那么再增加一个当前节点到终点的距离，结合$g(i)$可以实现防止过度跑偏。
 
-在电路图中，虽然不知道中间某个点距离终点的最短路，但是我们可以将地图置于坐标轴中，通过计算节点之间的曼哈顿距离来代替欧几里得距离，曼哈顿距离就是计算两点之间横纵坐标的距离之和，只涉及到加减法和符号转换。这里得到的距离记为$h(i)$，为启发函数。
+在电路图中，虽然不知道中间某个点距离终点的最短路，但是我们可以将地图置于坐标轴中，通过计算节点之间的曼哈顿距离来代替欧几里得距离，曼哈顿距离就是计算两点之间横纵坐标的距离之和，只涉及到加减法和符号转换。这里得到的距离记为$h(i)$，作为启发函数。
 
 而$g(i) + h(i)$就可以当做最终的估价函数，优先队列中，估价函数值最低的优先出列。
 $$
@@ -258,7 +258,7 @@ $$
 │   ├── `routing.h`
 │   ├── `routing.cpp`
 
-###### `connect`函数
+##### `connect`函数
 
 ```C++
 void connect(std::vector<std::vector<int>>& Maze, int source, int target, std::vector<int> &parent)
@@ -274,7 +274,7 @@ void connect(std::vector<std::vector<int>>& Maze, int source, int target, std::v
 ```
 `AStarGraph.AStar(int s, int e)`会传出全部的搜索结果`parent`，是一个大小为`n*n`的向量。如果直接通过`for`循环更改`Maze`的所有的参数，可能会出现两个引脚之间存在多条连线的情况。这里使用递归，由目标节点向前推进，直到回到开始节点为止。期间可能会经过其他引脚，此时不改变`Maze`中该引脚位置的参数。否则将`Maze`上的参数改为`3`，表示连线经过该点。
 
-###### `performAstar`函数
+##### `performAstar`函数
 
 ```C++
 void Routing::performAstar()
@@ -284,16 +284,51 @@ void Routing::performAstar()
 
 	for (int i = 0; i < ConnectionPoint.size() - 1; i++)
 	{
-        Astar.Initial();
+		Astar.Initial();
 		std::vector<int> parent = Astar.AStar(ConnectionPoint[i], ConnectionPoint[i + 1]);
 		connect(Maze, ConnectionPoint[i], ConnectionPoint[i + 1], parent);
 	}
+	Astar.drawGrid(Maze);
 }
+
 ```
 由于每次利用`Astar`算法对两个引脚进行连线后，都会改变图`Maze`上节点的参数，因此在进行下一次布线之前，首先需要使用`Astar.Initial()`函数进行初始化，将节点的`dist_`与`f_`恢复到最大值，之后再进行后续节点的`connect`操作。
 
-### Part 3 `FM`算法和`Astar`算法实现结果的显示
-该部分由沈笑涵同学完成。
+##### 连接的策略
+
+###### 采用的策略
+
+我们在连接点的时候采用的策略会自动优化一部分线长。但是由于我们实质上并没有尝试引入斯坦纳点去解决最小生成子树的问题，所以连出的线中仍有可以优化的部分。实际上我们可以优化点之间连接的顺序来实现这个工作。由于时间关系，我们将这个工作放在以后。
+
+实际上我们在连接点的时候，我们使用了这样的策略：
+
+1. 需要连线的点按照从上到下，从左到右的顺序进行记录。这种记录方式实际上会导致一些连线的浪费问题。我们考虑使用优先队列来实现这样一个连线的问题或许会更好一些。但程序中并没有这样做。
+2. 已经连过的走线我们将它的代价视为`0`，这样节点在同样的曼哈顿距离下会优先选择连好的线。
+3. 没有连过的走线我们将它的代价设为`1.1`。这样实际上会让节点之间在连线时在有可能的情况下不会因为路径进入队列的顺序问题而产生额外的走线。
+
+###### 结果的对比
+
+下面是我们优化过程中得到的中间文件的对比情况，供参考：
+
+使用`Calcdifference.cpp`编译了一个`Calc.exe`文件来实现这种代价的对比。
+
+使用方式：
+
+```bash
+Calc.exe file1 file2
+```
+
+实现两个文件中矩阵作差并求出线长的差距。
+
+<img src="picture\AstarCompar.png" alt="image-20230618135206312" width="600px" />
+
+对比了最初没有做优化以及加入了策略2和策略3之后得到的线长的优化长度。可以看到优化还是较为明显的。以下是总线长的计算。
+
+<img src="picture\LineLength.png" alt="image-20230618135617180" width="600px" />
+
+### Part 3 文件解析以及`FM`算法和`Astar`算法实现结果的显示
+
+该部分由任钰浩和沈笑涵同学完成。
 该部分实现了将前两部分`FM`和`Astar`算法的结果汇总，并完成相关布线代价的计算，并将最终布线结果输出到txt文件中。其部分详见以下文件：
 
 │   ├── `routing.cpp`
@@ -322,9 +357,6 @@ public:
     void performAstar();
     // 输出文件
     void outputfile();
-    //计算代价
-    int cost_of_routing_Astar();//Astar
-    int cost_of_FM();           //FM
 private:
     void connect(std::vector<std::vector<int>>& Maze, 
     int source, int target, std::vector<int> parent);
@@ -332,18 +364,16 @@ private:
     std::vector<std::vector<int>> Maze;
     // 模块连接关系
     std::vector<std::vector<int>> modules;
+    // 划分
+    std::vector<std::vector<int>> partition;
     // Astar代理
     AStarGraph Astar;
     // FM代理
     FM fm;
 };
 ```
-其中，`Maze`和`fm`分别存储`Astar`和`FM`算法得到的结果，两算法代价计算函数分别为
-```C++
-    //计算代价
-    int cost_of_routing_Astar();//Astar
-    int cost_of_FM();           //FM
-```
+其中，`Maze`和`fm`分别存储`Astar`和`FM`算法得到的结果。
+
 其中，`Astar`算法的代价为布线线长，`FM`算法的代价为最小比例切割边的值。
 最后，通过`outputfile()`函数将结果写入到txt文件中。
 
@@ -403,11 +433,11 @@ private:
 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 1 
 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
 0 1 1 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
-
-
 ```
 `Astar`代价如下：
-<img src="picture\Astar_out.png" alt="Astar_out.png" width="600px;" />
+<img src="picture\LineLength.png" alt="image-20230618135617180" width="600px" />
+
+在我们使用的简单的优化策略之下，总连线线长为168。
 
 ## 项目总结
 
