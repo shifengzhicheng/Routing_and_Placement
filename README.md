@@ -394,7 +394,7 @@ private:
 
 ```
 `Astar`代价如下：
-<img src="Astar_out.png" alt="Astar_out.png" width="600px;" />
+<img src="picture\Astar_out.png" alt="Astar_out.png" width="600px;" />
 
 ## 项目总结
 
