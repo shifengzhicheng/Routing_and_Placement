@@ -55,10 +55,18 @@ FM算法以及Astar算法实现读取文件进行处理
 
 ### 功能说明
 
+我们的项目完成了布局布线算法中的两个部分
+
+- 迷宫布局布线算法
+- `FM`算法实现的划分
+
 ### 创新点
 
 1. 使用工厂模式实现主要的功能，各部分抽象程度高，且可扩展性很强
 2. `Astar`算法使用了优先队列实现，使用简单的连线策略实现了多数情况下相对优的连线结果。
+3. `Astar`生成多点的连线的算法我们采取了以下策略：
+   - 增加尝试创建布线的边权重
+   - 将已布线边的权重降低为0
 3. `FM`算法实现了通过桶型数据结构查找最大增益和相应的更新，在大数据量的背景下对于算法时间复杂度的优化显得极为必要，同时使用多起始点方法改进`FM`算法。 
 
 ### 项目使用方法
@@ -78,6 +86,12 @@ FM算法以及Astar算法实现读取文件进行处理
 ```bash
 .\Routing.exe FM file\file.txt
 .\Routing.exe Astar file\file.txt
+```
+
+在`file`中有一个计算`Astar`布线长度的程序，原理是利用两个存储矩阵的文件中的矩阵做差然后计算布线线长。在`file`文件夹中执行如下命令：
+
+```bash
+.\Calc.exe file1 file2
 ```
 
 #### cmd中运行结果示意：
@@ -254,7 +268,7 @@ public:
 	std::vector<int> ConnectedNode;          //节点连接的其他节点
 }
 ```
-对于NODE类，重载了三个构造函数以便灵活赋值。
+对于`NODE`类，重载了三个构造函数以便灵活赋值。
 
 ##### 节点的指针数组类
 
@@ -285,14 +299,12 @@ public:
 	int nodeIndex;
 	BucketNode* next;
 	BucketNode* prev;
-
 	BucketNode(int i,BucketNode* n,BucketNode* p) {
 		nodeIndex = i;
 		next = n;
 		prev = p;
 	}
 };
-
 class Bucket {
 public:
 	std::map<int, BucketNode*, std::greater<int>> bucketAtoB;
@@ -312,11 +324,19 @@ public:
 ```c++
 class FM {
 public:
-        int mincutsize;                                                                                                               //FM算法执行后当前的最小切割数
-	
-	void one_swap(Bucket& bu, POINTER_ARRAY& pointer_array_local, POINTER_ARRAY& pointer_array_global, int currentBest);          //FM算法的一次迭代
-	std::vector<std::vector<int>> FM_Algorithm(std::vector<std::vector<int>> modules);                                            //FM算法
-	std::vector<std::vector<int>> FM_Algorithm_Pertubation(std::vector<std::vector<int>> modules);                                //加入初始状态微扰后改进的FM算法
+    int mincutsize;								// FM算法执行后当前的最小切割数
+	void one_swap(
+        Bucket& bu, 
+        POINTER_ARRAY& pointer_array_local, 
+        POINTER_ARRAY& pointer_array_global, 
+        int currentBest
+    );											// FM算法的一次迭代
+	std::vector<std::vector<int>> FM_Algorithm(
+        std::vector<std::vector<int>> modules
+    );                                          //FM算法
+	std::vector<std::vector<int>> FM_Algorithm_Pertubation(
+        std::vector<std::vector<int>> modules
+    );                                			//加入初始状态微扰后改进的FM算法
 };
 ```
 `one_swap`方法即通过桶形数据结构和节点指针数组执行如下过程：从`partition A`中取得最大增益且未锁定的节点移动至`partition B`中，更新`A`节点相连所有节点的增益；从`partition B`中取得最大增益且未锁定的节点移动至`partition A`中，更新`B`节点相连所有节点的增益。直到所有节点都被锁定后，完成一次迭代。
@@ -335,6 +355,8 @@ public:
 <img src="picture\fm_rand.png" alt="fm_rand" width="600px;" />
 
 ### Part 2`Astar`算法实现模块的连线
+
+这部分由郑志宇同学和周翔同学完成。
 
 #### 点到点的`A*`算法
 
@@ -541,9 +563,6 @@ public:
     void performAstar();
     // 输出文件
     void outputfile();
-    //计算布线代价
-    int cost_of_routing_Astar();//Astar
-    int cost_of_FM();           //FM
 private:
     void connect(std::vector<std::vector<int>>& Maze,
     int source, int target, std::vector<int> &parent);
@@ -635,6 +654,4 @@ cut size: 1113
 在我们使用的简单的优化策略之下，总连线线长为168。
 
 ## 项目总结
-
-
 
