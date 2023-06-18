@@ -6,6 +6,7 @@ void Routing::performFM()
 	// partition = FM_Algorithm(modules);
 	partition = fm.FM_Algorithm_Pertubation(modules);
 }
+
 void Routing::connect(std::vector<std::vector<int>> &Maze, int source, int target, std::vector<int> &parent)
 {
 	if (source == target)
@@ -17,13 +18,13 @@ void Routing::connect(std::vector<std::vector<int>> &Maze, int source, int targe
 		Maze[y].at(x) = 3;
 	}
 	connect(Maze, source, parent[target], parent);
+	Astar.modifyWeight(target, parent[target], 0);
 }
 
 void Routing::performAstar()
 {
 	Astar.CreateGraph(Maze);
 	std::vector<int> ConnectionPoint = Astar.getConnectionPoint();
-
 	for (int i = 0; i < ConnectionPoint.size() - 1; i++)
 	{
 		Astar.Initial();
@@ -45,7 +46,7 @@ void Routing::outputfile()
 	switch (type)
 	{
 	case OPAstar:
-	// 这里是输出AStar寻径之后的矩阵
+		// 这里是输出AStar寻径之后的矩阵
 		for (auto i : Maze)
 		{
 			for (auto value : i)
@@ -54,15 +55,15 @@ void Routing::outputfile()
 		}
 		break;
 	case OPFM:
-	// 在这里插入OPFM的输出程序
-	for (auto i : partition)
-	{
-		output_file <<"partition size: "<<i.size()<<": "<<std::endl;
-		for (auto value : i)
-			output_file << value << " ";
-		output_file << std::endl;
-	}
-	output_file << "cut size: " << fm.mincutsize << std::endl;
+		// 在这里插入OPFM的输出程序
+		for (auto i : partition)
+		{
+			output_file << "partition size: " << i.size() << ": " << std::endl;
+			for (auto value : i)
+				output_file << value << " ";
+			output_file << std::endl;
+		}
+		output_file << "cut size: " << fm.mincutsize << std::endl;
 		break;
 	default:
 		break;
