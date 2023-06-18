@@ -1,6 +1,6 @@
 #pragma once
 #include "parser.h"
-#include "FM.h"
+#include "FM_Algorithm.h"
 #include "Astar.h";
 class Routing
 {
@@ -31,8 +31,10 @@ private:
     std::vector<std::vector<int>> Maze;
     // 模块连接关系
     std::vector<std::vector<int>> modules;
+    // 划分
+    std::vector<std::vector<int>> partition;
     // Astar代理
     AStarGraph Astar;
-    // FM代理
+    // FM算法实现代理
     FM fm;
 };

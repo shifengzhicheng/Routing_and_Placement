@@ -3,9 +3,8 @@
 #include <iostream>
 void Routing::performFM()
 {
-}
-int cost_of_FM()
-{
+	// partition = FM_Algorithm(modules);
+	partition = fm.FM_Algorithm_Pertubation(modules);
 }
 void Routing::connect(std::vector<std::vector<int>> &Maze, int source, int target, std::vector<int> parent)
 {
@@ -56,6 +55,14 @@ void Routing::outputfile()
 		break;
 	case OPFM:
 	// 在这里插入OPFM的输出程序
+	for (auto i : partition)
+	{
+		output_file <<"partition size: "<<i.size()<<": "<<std::endl;
+		for (auto value : i)
+			output_file << value << " ";
+		output_file << std::endl;
+	}
+	output_file << "cut size: " << fm.mincutsize << std::endl;
 		break;
 	default:
 		break;
@@ -64,15 +71,4 @@ void Routing::outputfile()
 	// 关闭文件
 	output_file.close();
 	std::cout << "Output file: " << filepath << std::endl;
-}
-int Routing::cost_of_routing_Astar()
-{
-	int cost = 0;
-	for (std::vector<std::vector<int>>::iterator it = Maze.begin(); it != Maze.end(); it++)
-	{
-		for (std::vector<int>::iterator it2 = it->begin(); it2 != it->end(); it2++)
-			if ((*it2) == 3)
-				cost++;
-	}
-	return cost;
 }
