@@ -1,0 +1,36 @@
+# 忽略生成的构建文件夹
+/build/
+
+# 忽略CMake生成的文件
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+
+# 忽略编译生成的二进制文件
+*.exe
+*.out
+*.o
+
+# 忽略日志文件
+*.log
+
+# 忽略临时文件
+*.tmp
+*.swp
+*.swo
+
+# 忽略操作系统生成的文件
+.DS_Store
+Thumbs.db
+
+# 忽略用户特定的IDE配置文件
+.vscode/
+.idea/
+
+# 忽略文档备份文件
+*.bak
+*.~*
+
+# 忽略项目中可能的输出文件
+file/*.txtout.txt
